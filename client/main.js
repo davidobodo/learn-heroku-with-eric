@@ -16,7 +16,6 @@ const handleOnSubmit = (e) => {
     "Content-Type": "application/json",
   });
 
-  console.log(form.action);
 
   const request = new Request(form.action, {
     method: form.method,
@@ -26,7 +25,7 @@ const handleOnSubmit = (e) => {
   });
 
   fetch(request)
-    .then((res) => console.log(res.json()))
+    .then((res) => res.json())
     .then((data) => console.log(data))
     .catch((err) => console.log(err));
 };
