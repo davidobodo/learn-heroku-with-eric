@@ -40,13 +40,17 @@ app.post("/send", (req, res) => {
             `;
 
         let transporter = nodemailer.createTransport({
-            host: "smtp.gmail.com",
+            // host: "smtp.gmail.com",
+            service: "gmail",
             port: 465,
             secure: true,
             auth: {
                 user: process.env.USER_NAME,
                 pass: process.env.PASSWORD,
             },
+            tls: {
+                rejectUnauthorized: false
+            }
         });
 
         let mailOptions = {
