@@ -51,20 +51,20 @@ app.post("/send", (req, res) => {
 
     let mailOptions = {
       from: `${fullName} <${email}>`,
-      to: `${email}, davidobodo@rocketmail.com`,
+      to: "obododavid5@gmail.com",
       subject: `${subject}`,
       text: "What is this used for?",
       html: output,
     };
 
     try {
-      const result = await transporter.sendMail(mailOptions);
+      const result = await transporter.sendMail({ ...mailOptions });
 
       console.log(result);
       return res.status(200).send(result);
     } catch (error) {
       console.log(error);
-      return res.status(500).send(error);
+      return res.status(500).send({ error });
     }
   });
 });

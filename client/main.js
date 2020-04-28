@@ -16,9 +16,11 @@ const handleOnSubmit = (e) => {
     "Content-Type": "application/json",
   });
 
+  console.log(form.action);
+
   const request = new Request(form.action, {
     method: form.method,
-    // mode: "no-cors",
+    mode: "no-cors",
     headers: headers,
     body: JSON.stringify(data),
   });
