@@ -40,7 +40,7 @@ app.post("/send", (req, res) => {
             `;
 
         let transporter = nodemailer.createTransport({
-            host: "smtp.gmail.com",
+            host: "smtp.sendgrid.net",
             port: 465,
             secure: true,
             auth: {
@@ -50,7 +50,7 @@ app.post("/send", (req, res) => {
         });
 
         let mailOptions = {
-            from: `${fullName} <${email}>`,
+            from: `davidobodo@rocketmail.com`,
             to: "obododavid5@gmail.com",
             subject: `${subject}`,
             text: "What is this used for?",
