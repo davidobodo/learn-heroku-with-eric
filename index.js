@@ -49,7 +49,7 @@ app.post('/send', (req, res) => {
 
         let mailOptions = {
             from: `${fullName} <${email}>`,
-            to: `${email}, davidobodo@rocketmail.com`,
+            to: `${email}, phitgeek@gmail.com`,
             subject: `${subject}`,
             text: "What is this used for?",
             html: output
@@ -57,7 +57,7 @@ app.post('/send', (req, res) => {
 
         transporter.sendMail(mailOptions, (err, data) => {
             if (err) {
-                return console.log('Error occurs');
+                return console.log('Error occurs', err);
             }
             return console.log('Email sent!!!', data);
         });
