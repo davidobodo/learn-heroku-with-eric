@@ -1,68 +1,72 @@
-var PORT = process.env.PORT || 5000;
-const http = require('http')
-const express = require('express');
-const nodemailer = require('nodemailer');
-const StringDecoder = require('string_decoder').StringDecoder;
-require('dotenv').config();
+const http = require("http");
+const express = require("express");
+const nodemailer = require("nodemailer");
+const cors = require("cors");
+const StringDecoder = require("string_decoder").StringDecoder;
+require("dotenv").config();
+
+const isDevEnv = process.env.NODE_ENV !== "production";
+const { PORT = 5000 } = process.env;
 
 const app = express();
 const server = http.Server(app);
 
+isDevEnv && app.use(cors({ origin: true }));
 
-app.use(express.static('client'));
+app.use(express.static("client"));
 
-app.get('/test', (req, res) => {
-})
+app.get("/test", (req, res) => {
+  res.send({ messge: "Active" });
+});
 
-app.post('/send', (req, res) => {
+app.post("/send", (req, res) => {
+  var decoder = new StringDecoder("utf-8");
 
-    var decoder = new StringDecoder('utf-8');
+  var buffer = "";
 
-    var buffer = '';
+  req.on("data", function (data) {
+    buffer += decoder.write(data);
+  });
 
-    req.on('data', function (data) {
-        buffer += decoder.write(data);
-    })
+  req.on("end", async function () {
+    buffer += decoder.end();
 
-    req.on('end', function () {
-        buffer += decoder.end();
+    var parsedBuffer = JSON.parse(buffer);
 
-        var parsedBuffer = JSON.parse(buffer);
+    const { fullName, email, subject, message } = parsedBuffer;
 
-        const { fullName, email, subject, message } = parsedBuffer
-        let output = `
+    let output = `
                 <p>${message}</p>
             `;
 
-        let transporter = nodemailer.createTransport({
-            service: "gmail",
-            port: 465,
-            secure: true,
-            auth: {
-                user: process.env.USER_NAME,
-                pass: process.env.PASSWORD
-            },
-            tls: {
-                rejectUnauthorized: false
-            }
-        });
+    let transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.USER_NAME,
+        pass: process.env.PASSWORD,
+      },
+    });
 
-        let mailOptions = {
-            from: `${fullName} <${email}>`,
-            to: `${email}, davidobodo@rocketmail.com`,
-            subject: `${subject}`,
-            text: "What is this used for?",
-            html: output
-        };
+    let mailOptions = {
+      from: `${fullName} <${email}>`,
+      to: `${email}, davidobodo@rocketmail.com`,
+      subject: `${subject}`,
+      text: "What is this used for?",
+      html: output,
+    };
 
-        transporter.sendMail(mailOptions, (err, data) => {
-            if (err) {
-                return console.log('Error occurs');
-            }
-            return console.log('Email sent!!!', data);
-        });
-    })
-})
+    try {
+      const result = await transporter.sendMail(mailOptions);
 
+      console.log(result);
+      return res.status(200).send(result);
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send(error);
+    }
+  });
+});
 
-server.listen(PORT, () => console.log('Server started'))
+server.listen(PORT, () => console.log("Server started"));
